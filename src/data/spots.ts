@@ -13,7 +13,7 @@ export const spots: Spot[] = [
     id: 1,
     title: "鴨川デルタ (出町柳)",
     anime: "四畳半神話大系 / けいおん！",
-    imgUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Kamogawa_Delta.jpg",
+    imgUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kamogawa_Delta.jpg/960px-Kamogawa_Delta.jpg",
     hint: "飛び石の3つ目あたりから、背景の橋と一致させてください。",
     lat: 35.029837,
     lng: 135.772528
