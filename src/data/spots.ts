@@ -4,28 +4,36 @@ export interface Spot {
   anime: string;
   imgUrl: string;
   hint: string;
+  lat: number;
+  lng: number;
 }
 
 export const spots: Spot[] = [
   {
     id: 1,
-    title: "鴨川デルタ",
-    anime: "有頂天家族 / たまこまーけっと",
-    imgUrl: "https://picsum.photos/id/10/800/600",
-    hint: "飛び石に立って、背景の橋と一致させてください"
+    title: "鴨川デルタ (出町柳)",
+    anime: "四畳半神話大系 / けいおん！",
+    imgUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Kamogawa_Delta.jpg",
+    hint: "飛び石の3つ目あたりから、背景の橋と一致させてください。",
+    lat: 35.029837,
+    lng: 135.772528
   },
   {
     id: 2,
-    title: "南禅寺 水路閣",
-    anime: "けいおん！ / 境界の彼方",
-    imgUrl: "https://picsum.photos/id/20/800/600",
-    hint: "アーチの3番目の柱を基準にします"
+    title: "京阪 宇治駅",
+    anime: "響け！ユーフォニアム",
+    imgUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Keihan_Uji_station.jpg",
+    hint: "駅の改札を出てすぐのベンチ前が目印です。アーチの重なりを調整してください。",
+    lat: 34.894291,
+    lng: 135.808044
   },
   {
     id: 3,
-    title: "伏見稲荷 千本鳥居",
-    anime: "いなり、こんこん、恋いろは。",
-    imgUrl: "https://picsum.photos/id/30/800/600",
-    hint: "鳥居の重なりが等間隔に見える位置へ"
+    title: "出町桝形商店街",
+    anime: "たまこまーけっと / 有頂天家族",
+    imgUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Demachiyanagi_station_building_20221008.jpg",
+    hint: "アーケード入口から看板中央のサバを入れるように構えます。※写真は出町柳駅",
+    lat: 35.030438,
+    lng: 135.768686
   }
 ];

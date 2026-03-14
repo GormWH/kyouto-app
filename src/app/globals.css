@@ -12,6 +12,9 @@
   --font-mono: var(--font-geist-mono);
   --color-navy: #1a2a3a;
   --color-vermilion: #e60012;
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-slide-down: slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,4 +28,120 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, sans-serif;
+}
+
+/* ── Keyframe Animations ── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Custom Range Slider ── */
+.camera-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.camera-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+}
+
+.camera-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid #ffffffcc;
+  cursor: pointer;
+  margin-top: -8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.camera-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.4), 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.camera-slider::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+}
+
+.camera-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+}
+
+.camera-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid #ffffffcc;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.camera-slider.slider-opacity {
+  background: linear-gradient(to right, transparent, #ffffffcc);
+}
+
+.camera-slider.slider-opacity::-webkit-slider-thumb {
+  background: #ffffff;
+}
+
+.camera-slider.slider-opacity::-moz-range-thumb {
+  background: #ffffff;
+}
+
+.camera-slider.slider-split {
+  background: linear-gradient(to right, #e60012, #ff6b7a);
+}
+
+.camera-slider.slider-split::-webkit-slider-thumb {
+  background: #e60012;
+}
+
+.camera-slider.slider-split::-moz-range-thumb {
+  background: #e60012;
+}
+
+/* ── Shutter Button Pulse ── */
+@keyframes shutter-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+}
+
+.shutter-btn {
+  animation: shutter-pulse 2.5s ease-in-out infinite;
 }

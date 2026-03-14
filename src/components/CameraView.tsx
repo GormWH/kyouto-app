@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Spot } from "@/data/spots";
-import { ArrowLeft, Camera, Columns, Layers } from "lucide-react";
+import { ArrowLeft, Camera, Layers, SplitSquareHorizontal, Eye, EyeOff } from "lucide-react";
 
 interface CameraViewProps {
   spot: Spot;
@@ -14,9 +14,10 @@ export function CameraView({ spot, onBack }: CameraViewProps) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const [sliderValue, setSliderValue] = useState<number>(50);
-  const [viewMode, setViewMode] = useState<"opacity" | "split">("opacity");
+  const [opacityValue, setOpacityValue] = useState<number>(50);
+  const [splitValue, setSplitValue] = useState<number>(100);
   const [uiHidden, setUiHidden] = useState<boolean>(false);
+  const [controlsCollapsed, setControlsCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     let activeStream: MediaStream | null = null;
@@ -72,8 +73,8 @@ export function CameraView({ spot, onBack }: CameraViewProps) {
       <div 
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{
-          opacity: viewMode === "opacity" ? sliderValue / 100 : 1,
-          clipPath: viewMode === "split" ? `polygon(0 0, ${sliderValue}% 0, ${sliderValue}% 100%, 0 100%)` : 'none'
+          opacity: opacityValue / 100,
+          clipPath: `polygon(0 0, ${splitValue}% 0, ${splitValue}% 100%, 0 100%)`
         }}
       >
         <img 
@@ -84,90 +85,168 @@ export function CameraView({ spot, onBack }: CameraViewProps) {
       </div>
 
       {/* Split view divider line */}
-      {viewMode === "split" && !uiHidden && (
+      {!uiHidden && splitValue < 100 && (
         <div 
-          className="absolute top-0 bottom-0 bg-[var(--color-vermilion)] w-0.5 shadow-[0_0_8px_rgba(230,0,18,0.8)] pointer-events-none z-10"
-          style={{ left: `${sliderValue}%` }}
+          className="absolute top-0 bottom-0 w-[2px] pointer-events-none z-10"
+          style={{ 
+            left: `${splitValue}%`,
+            background: 'linear-gradient(to bottom, transparent, #e60012, #e60012, transparent)',
+            boxShadow: '0 0 12px rgba(230, 0, 18, 0.6), 0 0 24px rgba(230, 0, 18, 0.3)'
+          }}
         />
       )}
 
       {/* Error Message */}
       {errorMsg && (
-        <div className="absolute top-1/3 left-4 right-4 bg-red-900/80 text-white p-4 rounded-xl backdrop-blur-sm z-20 text-center">
-          {errorMsg}
+        <div className="absolute top-1/3 left-4 right-4 bg-red-900/70 text-white p-5 rounded-2xl backdrop-blur-xl z-20 text-center border border-red-800/50 animate-fade-in">
+          <p className="text-sm leading-relaxed">{errorMsg}</p>
         </div>
       )}
 
-      {/* Control UI */}
-      {/* Hint Banner */}
+      {/* ── Top Header ── */}
       <div 
-        className={`absolute top-0 left-0 right-0 p-4 pt-8 bg-gradient-to-b from-black/70 to-transparent transition-opacity duration-300 z-20 pointer-events-none ${uiHidden ? 'opacity-0' : 'opacity-100'}`}
+        className={`absolute top-0 left-0 right-0 z-20 transition-all duration-500 ease-out ${
+          uiHidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
+        }`}
       >
-        <div className="text-center pb-2">
-          <h2 className="text-white text-lg font-bold drop-shadow-md">{spot.title}</h2>
-          <p className="text-stone-300 text-xs mt-1 drop-shadow-md">{spot.hint}</p>
+        <div className="p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+          <div className="animate-slide-down">
+            {/* Glass Card Header */}
+            <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 px-4 py-3 shadow-lg">
+              <div className="flex items-center gap-3">
+                {/* Back Button */}
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onBack(); }}
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 active:scale-90 flex-shrink-0"
+                  aria-label="戻る"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </button>
+
+                {/* Spot Info */}
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-white text-base font-bold truncate leading-tight">{spot.title}</h2>
+                  <p className="text-white/50 text-xs mt-0.5 truncate">{spot.hint}</p>
+                </div>
+
+                {/* Anime Badge */}
+                <span className="hidden sm:inline-flex items-center bg-white/10 text-white/80 text-[10px] font-medium px-2.5 py-1 rounded-full border border-white/10 flex-shrink-0">
+                  {spot.anime}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Bottom Panel */}
+      {/* ── Bottom Panel ── */}
       <div 
-        className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-all duration-300 z-20 ${uiHidden ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+        className={`absolute bottom-0 left-0 right-0 z-20 transition-all duration-500 ease-out ${
+          uiHidden ? 'opacity-0 translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
+        }`}
       >
-        
-        {/* Slider Controls */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="text-white">
-            {viewMode === "opacity" ? <Layers className="w-5 h-5 text-stone-300" /> : <Columns className="w-5 h-5 text-stone-300" />}
-          </div>
-          <input 
-            type="range" 
-            min="0" 
-            max="100" 
-            value={sliderValue}
-            onChange={(e) => setSliderValue(Number(e.target.value))}
-            className="flex-1 accent-[var(--color-vermilion)] h-2 bg-stone-600 rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="text-white text-sm font-mono w-10 text-right">
-            {sliderValue}%
+        <div className="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="animate-fade-in-up">
+            {/* Glass Card Panel */}
+            <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+
+              {/* Sliders Section */}
+              <div 
+                className={`transition-all duration-300 ease-out overflow-hidden ${
+                  controlsCollapsed ? 'max-h-0 opacity-0' : 'max-h-60 opacity-100'
+                }`}
+              >
+                <div className="px-4 pt-4 pb-2 space-y-4">
+                  {/* Opacity Slider */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-white/60" />
+                        <span className="text-[11px] text-white/60 font-medium uppercase tracking-wider">透過度</span>
+                      </div>
+                      <span className="text-white/80 text-xs font-mono tabular-nums bg-white/10 px-2 py-0.5 rounded-md">
+                        {opacityValue}%
+                      </span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      value={opacityValue}
+                      onChange={(e) => setOpacityValue(Number(e.target.value))}
+                      className="camera-slider slider-opacity"
+                    />
+                  </div>
+
+                  {/* Split Slider */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <SplitSquareHorizontal className="w-4 h-4 text-white/60" />
+                        <span className="text-[11px] text-white/60 font-medium uppercase tracking-wider">分割位置</span>
+                      </div>
+                      <span className="text-white/80 text-xs font-mono tabular-nums bg-white/10 px-2 py-0.5 rounded-md">
+                        {splitValue}%
+                      </span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      value={splitValue}
+                      onChange={(e) => setSplitValue(Number(e.target.value))}
+                      className="camera-slider slider-split"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-white/10 mx-3" />
+
+              {/* Button Bar */}
+              <div className="flex items-center justify-between px-3 py-3">
+                {/* Toggle Controls */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setControlsCollapsed(!controlsCollapsed); }}
+                  className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 active:scale-90 group"
+                  aria-label={controlsCollapsed ? "コントロールを展開" : "コントロールを折りたたむ"}
+                >
+                  {controlsCollapsed ? (
+                    <Eye className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
+                  )}
+                </button>
+
+                {/* Shutter Button (Center) */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setUiHidden(true);
+                  }}
+                  className="shutter-btn relative w-16 h-16 rounded-full flex items-center justify-center transition-transform active:scale-90"
+                  aria-label="UI非表示（スクリーンショット用）"
+                >
+                  {/* Outer Ring */}
+                  <div className="absolute inset-0 rounded-full border-[3px] border-white/80" />
+                  {/* Inner Circle */}
+                  <div className="w-12 h-12 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition-colors">
+                    <Camera className="w-5 h-5 text-stone-800" />
+                  </div>
+                </button>
+
+                {/* Spacer for symmetry — same width as toggle button */}
+                <div className="p-2.5 w-[44px]" />
+              </div>
+
+              {/* Hint Text */}
+              <p className="text-center text-[10px] text-white/30 pb-2 -mt-1">
+                シャッターでUI非表示 · タップで再表示
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Buttons */}
-        <div className="flex justify-between items-center">
-          <button 
-            onClick={onBack}
-            className="p-3 bg-stone-800/80 hover:bg-stone-700 text-white rounded-full backdrop-blur-md transition-colors"
-            aria-label="戻る"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-
-          <button 
-            onClick={() => setViewMode(prev => prev === "opacity" ? "split" : "opacity")}
-            className="px-6 py-3 bg-[var(--color-navy)]/80 hover:bg-[var(--color-navy)] text-white font-bold rounded-full backdrop-blur-md transition-all flex items-center gap-2 border border-white/10"
-          >
-            {viewMode === "opacity" ? (
-              <><Columns className="w-4 h-4" /> ワイプ</>
-            ) : (
-              <><Layers className="w-4 h-4" /> 半透明</>
-            )}
-          </button>
-
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              setUiHidden(true);
-            }}
-            className="p-3 bg-[var(--color-vermilion)] hover:bg-red-600 text-white rounded-full shadow-lg transition-transform active:scale-95 flex items-center justify-center"
-            aria-label="UI非表示（スクリーンショット用）"
-          >
-            <Camera className="w-6 h-6" />
-          </button>
-        </div>
-        
-        <p className="text-center text-xs text-stone-400 mt-4 h-4">
-          カメラボタンでUIを隠します。画面タップで再表示。
-        </p>
       </div>
 
     </div>
