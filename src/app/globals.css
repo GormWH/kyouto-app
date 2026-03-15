@@ -145,3 +145,14 @@ body {
 .shutter-btn {
   animation: shutter-pulse 2.5s ease-in-out infinite;
 }
+
+/* ── Camera Flash Effect ── */
+@keyframes flash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.flash-camera {
+  animation: flash 0.6s ease-out forwards;
+}
